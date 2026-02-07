@@ -1,0 +1,38 @@
+{
+  "os": "macOS-15.7.2-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.5",
+  "startedAt": "2026-02-07T20:52:19.791096Z",
+  "args": [
+    "config/basic.py"
+  ],
+  "program": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/translate-roman-numbers/../../comp560-nanoGPT/train.py",
+  "git": {
+    "remote": "https://github.com/rohanpiya/comp560-rohanpiya.git",
+    "commit": "5c0ed6a3292e5d12b4cff4d3c542a94d2d0a8aa3"
+  },
+  "email": "piyar@dickinson.edu",
+  "root": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/translate-roman-numbers",
+  "host": "Rohans-MacBook-Pro-2.local",
+  "executable": "/opt/anaconda3/bin/python",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "494384795648",
+      "used": "263052939264"
+    }
+  },
+  "memory": {
+    "total": "8589934592"
+  },
+  "apple": {
+    "name": "Apple M3",
+    "ecpuCores": 4,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 8,
+    "swapTotalBytes": "2147483648",
+    "ramTotalBytes": "8589934592"
+  },
+  "writerId": "kk1uldgsejquq13cg6bicx0fiwrgsvj5"
+}
