@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.24.0
+        e:
+            z600fen7ftfz96bo2by93gkvlg5gmt78:
+                apple:
+                    ecpuCores: 4
+                    gpuCores: 10
+                    memoryGb: 8
+                    name: Apple M3
+                    pcpuCores: 4
+                    ramTotalBytes: "8589934592"
+                    swapTotalBytes: "3221225472"
+                args:
+                    - config/spanish.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "494384795648"
+                        used: "264240381952"
+                email: piyar@dickinson.edu
+                executable: /opt/anaconda3/bin/python
+                git:
+                    commit: 3ca470e19c6814b758ee0cdb7f8ae8b1777840b8
+                    remote: https://github.com/rohanpiya/comp560-rohanpiya.git
+                host: Rohans-MacBook-Pro-2.local
+                memory:
+                    total: "8589934592"
+                os: macOS-15.7.2-arm64-arm-64bit-Mach-O
+                program: /Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/translate-roman-numbers/../../comp560-nanoGPT/train.py
+                python: CPython 3.13.5
+                root: /Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/translate-roman-numbers
+                startedAt: "2026-02-07T22:24:39.368496Z"
+                writerId: z600fen7ftfz96bo2by93gkvlg5gmt78
+        m: []
+        python_version: 3.13.5
+        t:
+            "1":
+                - 1
+            "2":
+                - 1
+            "3":
+                - 13
+                - 16
+            "4": 3.13.5
+            "5": 0.24.0
+            "12": 0.24.0
+            "13": darwin-arm64
+always_save_checkpoint:
+    value: false
+backend:
+    value: nccl
+batch_size:
+    value: 12
+beta1:
+    value: 0.9
+beta2:
+    value: 0.99
+bias:
+    value: false
+block_size:
+    value: 64
+compile:
+    value: false
+dataset:
+    value: spanish
+decay_lr:
+    value: true
+device:
+    value: cpu
+dropout:
+    value: 0
+dtype:
+    value: float16
+eval_interval:
+    value: 50
+eval_iters:
+    value: 20
+eval_only:
+    value: false
+grad_clip:
+    value: 1
+gradient_accumulation_steps:
+    value: 1
+init_from:
+    value: scratch
+learning_rate:
+    value: 0.001
+log_interval:
+    value: 2
+lr_decay_iters:
+    value: 2000
+max_iters:
+    value: 2000
+min_lr:
+    value: 0.0001
+n_embd:
+    value: 128
+n_head:
+    value: 4
+n_layer:
+    value: 4
+out_dir:
+    value: out/spanish
+wandb_log:
+    value: true
+wandb_project:
+    value: rohan-translate-roman-numbers
+wandb_run_name:
+    value: spanish 2000 iters
+warmup_iters:
+    value: 100
+weight_decay:
+    value: 0.1
