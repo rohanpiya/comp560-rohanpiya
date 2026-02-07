@@ -1,0 +1,38 @@
+{
+  "os": "macOS-15.7.2-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.5",
+  "startedAt": "2026-02-07T19:23:22.662669Z",
+  "args": [
+    "config/names.py"
+  ],
+  "program": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/comma-semicolon/../../comp560-nanoGPT/train.py",
+  "git": {
+    "remote": "https://github.com/rohanpiya/comp560-rohanpiya.git",
+    "commit": "83a4316100c81ccff04da8ec18a7991ba972d02b"
+  },
+  "email": "piyar@dickinson.edu",
+  "root": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/comma-semicolon",
+  "host": "Rohans-MacBook-Pro-2.local",
+  "executable": "/opt/anaconda3/bin/python",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "494384795648",
+      "used": "267310653440"
+    }
+  },
+  "memory": {
+    "total": "8589934592"
+  },
+  "apple": {
+    "name": "Apple M3",
+    "ecpuCores": 4,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 8,
+    "swapTotalBytes": "6442450944",
+    "ramTotalBytes": "8589934592"
+  },
+  "writerId": "pxbtbuoelve6ef2pb321d2aygraq4yl8"
+}

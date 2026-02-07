@@ -1,7 +1,7 @@
 # train a miniature character-level model
 # This file is based on an example in Karpathy's nanoGPT.
 
-out_dir = 'out'
+out_dir = 'out/names'
 eval_interval = 50
 eval_iters = 20
 log_interval = 2
@@ -11,9 +11,9 @@ always_save_checkpoint = False
 
 wandb_log = True # override via command line if you like
 wandb_project = "comma-semicolon" # 'jmac-insert-spaces'
-wandb_run_name = "basic 5000 iters" # 'insert-spaces'
+wandb_run_name = "names 5000 iters" # 'insert-spaces'
 
-dataset = 'basic'
+dataset = 'names'
 gradient_accumulation_steps = 1
 batch_size = 12
 block_size = 64
