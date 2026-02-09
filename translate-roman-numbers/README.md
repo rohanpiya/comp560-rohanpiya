@@ -1,65 +1,70 @@
-Roman Number Translation Experiments
+# Roman Number Translation Experiments
 
 This project explores whether a small character-level language model can learn structured number translations starting from Roman numerals. Multiple datasets of increasing complexity were used to test how well the model scales from simple bilingual translation to multilingual and multi-format outputs.
 
-All experiments are based on Andrej Karpathy’s nanoGPT framework and trained on CPU.
-
-Experiments Overview
+## Experiments Overview
 
 Three datasets were used:
 
-Basic (English) – Roman → English
+- Basic (English) – Roman → English
 
-Spanish – Roman → Spanish
+- Spanish – Roman → Spanish
 
-Advanced (Multilingual & Multiformat) – Roman → English, Spanish, Arabic numerals, Devanagari numerals, and Nepali words
+- Advanced (Multilingual & Multiformat) – Roman → English, Spanish, English numerals, Devanagari numerals, and Nepali words
 
-Each experiment was trained for 200 iterations (pipeline verification) and 2000 iterations (full training).
+Each experiment was trained for 200 iterations and 2000 iterations.
 
-Data Format
-1. Basic (English)
+## Data Format
+
+### 1. Basic (English)
+   
 I one
+
 II two
+
 III three
+
 IV four
+
 ...
+
 XX twenty
 
-2. Spanish
+
+### 2. Spanish
+   
 I uno
+
 II dos
+
 III tres
+
 IV cuatro
+
 ...
+
 XX veinte
 
-3. Advanced (Multilingual)
+
+### 3. Advanced (Multilingual)
 
 Each line contains multiple representations of the same number:
 
 I one uno 1 १ एक
+
 II two dos 2 २ दुई
+
 III three tres 3 ३ तीन
+
 IV four cuatro 4 ४ चार
+
 ...
+
 XX twenty veinte 20 २० बीस
 
+## Directory Structure
 
-This dataset combines:
-
-Roman numerals
-
-English words
-
-Spanish words
-
-Arabic numerals
-
-Devanagari numerals
-
-Nepali number words
-
-Directory Structure
+```text
 translate-roman-numbers/
 ├── README.md
 ├── config/
@@ -73,148 +78,146 @@ translate-roman-numbers/
 │   │   ├── val.bin
 │   │   └── meta.pkl
 │   ├── spanish/
+│   │   ├── prepare.py
+│   │   ├── train.bin
+│   │   ├── val.bin
+│   │   └── meta.pkl
 │   └── advanced/
-└── out/
+│       ├── prepare.py
+│       ├── train.bin
+│       ├── val.bin
+│       └── meta.pkl
+├── out/
+```
 
-Setup
 
-Create and activate a Python virtual environment:
 
-python -m venv venv
+## Setup
+
+- Create and activate a Python virtual environment:
+
+``` python -m venv venv
 source venv/bin/activate
+```
 
-
-Install dependencies:
-
-pip install torch numpy tqdm wandb
-
-
-Prepare a dataset (example: basic):
-
+- Prepare a dataset (example: basic):
+```
 cd translate-roman-numbers
 python data/basic/prepare.py
+```
 
+- Repeat for spanish and advanced as needed.
 
-Repeat for spanish and advanced as needed.
+- Training:
 
-Training
+  ```NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py \
+  python -u ../../comp560-nanoGPT/train.py config/basic.py
+  ```
+  
+  - Replace basic.py with spanish.py or advanced.py for other experiments.
 
-From the translate-roman-numbers directory:
-
-NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py \
-python -u ../../comp560-nanoGPT/train.py config/basic.py
-
-
-Replace basic.py with spanish.py or advanced.py for other experiments.
-
-Sampling
+- Sampling
+```
 NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py \
 python -u ../../comp560-nanoGPT/sample.py config/basic.py \
 --num_samples=1 --max_new_tokens=300 --seed=1337
+```
 
-Experiment Logs
-🔹 Basic (English)
-Run 1: max_iters = 200
+## Experiment Logs
 
-Purpose: Verify training and sampling pipeline
+### Basic (English)
 
-Results:
+#### Run 1: max_iters = 200
 
-Model learned line structure and repetition
+#### Results:
 
-Many translations incomplete or truncated
+- The model learned line structure and repetition
 
-Limited semantic accuracy
+- Many translations were incomplete or truncated
 
-Run 2: max_iters = 2000
+- Not very accurate
 
-Purpose: Full training
+#### Run 2: max_iters = 2000
 
-Results:
+#### Results:
 
-Consistently correct Roman → English translations
+- Consistently and almost always perfectly correct Roman → English translations
 
-Strong pattern repetition
+- Strong pattern repetition
 
-Minor truncation near sample boundaries
+### Spanish
+#### Run 1: max_iters = 200
 
-🔹 Spanish
-Run 1: max_iters = 200
+#### Purpose: Verify multilingual learning feasibility
 
-Purpose: Verify multilingual learning feasibility
+#### Results:
 
-Results:
+- Correct structure learned
 
-Correct structure learned
+- Spelling errors and partial words
 
-Some spelling errors and partial words
 
-Spanish vocabulary partially captured
+#### Run 2: max_iters = 2000
 
-Run 2: max_iters = 2000
+#### Results:
 
-Results:
+- Accurate Roman → Spanish translations
 
-Accurate Roman → Spanish translations
+- Accents and longer words learned surprisingly well (e.g., dieciséis)
 
-Accents and longer words learned surprisingly well (e.g., dieciséis)
+- Comparable performance to English despite higher complexity
 
-Comparable performance to English despite higher complexity
+### Advanced (Multilingual)
+#### Run 1: max_iters = 200
 
-🔹 Advanced (Multilingual)
-Run 1: max_iters = 200
+#### Results:
 
-Purpose: Stress-test model capacity
+- Inconsistent patterns and structure
 
-Results:
+- Many incomplete or mixed-language outputs
 
-Learned output structure (token ordering)
 
-Many incomplete or mixed-language outputs
+#### Run 2: max_iters = 2000
 
-Expected underfitting due to task complexity
+#### Results:
 
-Run 2: max_iters = 2000
+- Significant improvement across all representations
 
-Results:
+- Correct alignment between Roman numerals and multiple formats
 
-Significant improvement across all representations
+- Some minor inconsistencies, but strong overall learning
+  
+- Almost perfect accuracy
 
-Correct alignment between Roman numerals and multiple formats
+- Demonstrates the model’s ability to handle multilingual and numeric mappings simultaneously
 
-Some minor inconsistencies, but strong overall learning
-
-Demonstrates the model’s ability to handle multilingual and numeric mappings simultaneously
-
-Weights & Biases (WandB)
+## Weights & Biases (WandB)
 
 Training loss curves for all experiments were logged using WandB.
 
-Observations:
+### Observations:
 
-Loss decreased smoothly for basic and Spanish
+- Loss decreased smoothly as the number of iterations increased.
 
-Advanced experiment showed slower convergence and higher final loss
+- Increasing iterations consistently improved results across all datasets
+  
+- Loss was near zero at 2000 iterations.
 
-Increasing iterations consistently improved results across all datasets
 
-Screenshots and outputs are included in the accompanying PDF.
+## Conclusion
 
-Conclusion
-What Worked Well
+- The model almost perfectly learnt the basic dataset even when trained at 200 iterations, suggesting that easier patterns could be learnt with fewer iterations.
 
-Clean, repetitive datasets enabled rapid learning
+- The model performed really badly when trained at 200 iterations for the advanced dataset.
 
-Increasing training iterations from 200 → 2000 dramatically improved accuracy
+- Increasing training iterations from 200 → 2000 significantly improved accuracy for the advanced dataset.
 
-Character-level modeling successfully handled multiple languages and scripts
+- Character-level modeling successfully handled multiple languages and scripts
 
-CPU training was sufficient for all experiments
+- CPU training was sufficient for all experiments
 
-Key Takeaways
+#### Key Takeaways
 
-Model complexity must match task complexity
+- Advanced multilingual translation is achievable even with a small GPT
 
-Advanced multilingual translation is achievable even with a small GPT
-
-Structured symbolic data is well-suited for character-level transformers
+- Structured symbolic data is well-suited for character-level transformers
