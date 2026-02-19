@@ -3,6 +3,10 @@ eval_interval = 50
 eval_iters = 20
 log_interval = 10
 
+# start = "2+8="
+# num_samples = 3
+# max_new_tokens = 2
+
 # only save when val improves
 always_save_checkpoint = False
 
