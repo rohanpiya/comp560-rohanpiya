@@ -75,12 +75,12 @@ def generateAnswer(prompt):
     x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
 
     with torch.no_grad():
-        y = model.generate(x, max_new_tokens=3, temperature=0.8) # feeds the model the tensor of encoded prompts as input, and predicts 3 next tokens
+        y = model.generate(x, max_new_tokens=2, temperature=0.8) # feeds the model the tensor of encoded prompts as input, and predicts 3 next tokens
 
     output = decode(y[0].tolist()) # decoding the generated output
     generated = output[len(prompt):] # the generated decoded output
 
-    return generated.strip()[0] # removes extra whitespace
+    return generated.strip() # removes extra whitespace
 
 # check for accuracy
 total_no_carry = 0 # tracks total number of sums without carry that the model performs
@@ -89,6 +89,12 @@ correct_no_carry = 0 # tracks total number of sums without carry that the model 
 total_carry = 0 # tracks total number of sums with carry that the model performs
 correct_carry = 0 # tracks total number of sums with carry that the model correctly performs
 
+# to analyse carry predictions
+from collections import Counter
+carry_predictions = Counter() # track carry predictions
+length_counter = Counter() # track the number of digits for carry predictions
+printed = 0 # to keep track of printed items
+
 for a in range(10):
     for b in range(10):
 
@@ -96,6 +102,7 @@ for a in range(10):
         correct_answer = str(a+b)
 
         model_answer = generateAnswer(prompt)
+        length_counter[len(model_answer)] += 1
 
         #check without carry
         if a+b < 10:
@@ -104,9 +111,16 @@ for a in range(10):
                 correct_no_carry += 1
         #check for carry
         else: 
+            if printed < 10:
+                print(f"{prompt}{model_answer} Correct Answer: {correct_answer}")
+                printed += 1
             total_carry += 1
+            carry_predictions[model_answer] += 1
             if model_answer == correct_answer:
                 correct_carry += 1
 
 print(f"No Carry Accuracy: {correct_no_carry/total_no_carry * 100}")
 print(f"Carry Accuracy: {correct_carry/total_carry * 100}")
+print(f"Carry prediction distribution: {carry_predictions}")
+print(f"Output length distribution: {length_counter}")
+print(model_answer)
