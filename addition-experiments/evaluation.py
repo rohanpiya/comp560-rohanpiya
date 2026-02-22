@@ -7,6 +7,8 @@ from contextlib import nullcontext
 import torch
 import tiktoken
 import sys
+import argparse
+
 
 # add comp560-nanogpt to path
 nanogpt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../comp560-nanoGPT"))
@@ -15,8 +17,13 @@ sys.path.append(nanogpt_path)
 from model import GPTConfig, GPT
 
 # -----------------------------------------------------------------------------
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset', type=str, required=True)
+args = parser.parse_args()
+dataset = args.dataset
+
+out_dir = f'out/{dataset}'
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
-out_dir = 'out/basic' # ignored if init_from is not 'resume'
 start = "\n" # or "<|endoftext|>" or etc. Can also specify a file, use as: "FILE:prompt.txt"
 num_samples = 10 # number of samples to draw
 max_new_tokens = 500 # number of tokens generated in each sample
@@ -57,7 +64,8 @@ model.eval()
 model.to(device)
 
 # load meta for encoding/decoding
-meta_path = os.path.join('data', 'basic', 'meta.pkl')
+# meta_path = os.path.join('data', 'basic', 'meta.pkl')
+meta_path = f'data/{dataset}/meta.pkl'
 with open(meta_path, 'rb') as f:
     meta = pickle.load(f)
 
