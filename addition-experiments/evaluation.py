@@ -5,7 +5,6 @@ import os
 import pickle
 from contextlib import nullcontext
 import torch
-import tiktoken
 import sys
 import argparse
 
@@ -27,8 +26,8 @@ init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g.
 start = "\n" # or "<|endoftext|>" or etc. Can also specify a file, use as: "FILE:prompt.txt"
 num_samples = 10 # number of samples to draw
 max_new_tokens = 500 # number of tokens generated in each sample
-temperature = 0.8 # 1.0 = no change, < 1.0 = less random, > 1.0 = more random, in predictions
-top_k = 200 # retain only the top_k most likely tokens, clamp others to have 0 probability
+temperature = 1.0 # 1.0 = no change, < 1.0 = less random, > 1.0 = more random, in predictions
+top_k = 1 # retain only the top_k most likely tokens, clamp others to have 0 probability
 seed = 1337
 device = 'cpu' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1', etc.
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32' or 'bfloat16' or 'float16'
@@ -83,7 +82,10 @@ def generateAnswer(prompt):
     x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
 
     with torch.no_grad():
-        y = model.generate(x, max_new_tokens=2, temperature=0.8) # feeds the model the tensor of encoded prompts as input, and predicts 3 next tokens
+        y = model.generate(x, 
+                           max_new_tokens=2, 
+                           temperature = 1.0, 
+                           top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
 
     output = decode(y[0].tolist()) # decoding the generated output
     generated = output[len(prompt):] # the generated decoded output
