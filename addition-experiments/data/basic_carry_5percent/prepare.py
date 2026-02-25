@@ -26,6 +26,19 @@ while total_carry_length < 0.05 * target_length:
 #shuffle carry and non-carry examples
 random.shuffle(lines)
 
+from collections import Counter
+
+sum_counter = Counter()
+
+for line in lines:
+    expr, ans = line.strip().split("=")
+    a, b = expr.split("+")
+    sum_counter[(int(a), int(b))] += 1
+
+print("Sample of sum frequencies:")
+for k in list(sum_counter.keys())[:10]:
+    print(k, sum_counter[k])
+
 print("First 20 lines of data:")
 for i in range(20):
     print(lines[i].strip())

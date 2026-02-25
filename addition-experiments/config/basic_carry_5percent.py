@@ -11,8 +11,8 @@ log_interval = 10
 always_save_checkpoint = False
 
 wandb_log = False # override via command line if you like
-wandb_project = None # 'jmac-insert-spaces'
-wandb_run_name = None # 'insert-spaces'
+wandb_project = "addition-experiments" # 'jmac-insert-spaces'
+wandb_run_name = "5 percent carry 3000 iters" # 'insert-spaces'
 
 dataset = 'basic_carry_5percent'
 gradient_accumulation_steps = 1
@@ -26,8 +26,8 @@ n_embd = 128  # need n_embd % n_head == 0
 dropout = 0.0
 
 learning_rate = 1e-3
-max_iters = 5000
-lr_decay_iters = 5000 # make equal to max_iters usually
+max_iters = 3000
+lr_decay_iters = 3000 # make equal to max_iters usually
 min_lr = 1e-4 # learning_rate / 10 usually
 beta2 = 0.99 # bigger than usual because number of tokens per iter is small
 

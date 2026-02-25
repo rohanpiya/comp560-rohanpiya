@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.25.0
+        e:
+            n26ngxayuta2fq3wpm6yq1yfrgka6p59:
+                apple:
+                    ecpuCores: 4
+                    gpuCores: 10
+                    memoryGb: 8
+                    name: Apple M3
+                    pcpuCores: 4
+                    ramTotalBytes: "8589934592"
+                    swapTotalBytes: "4294967296"
+                args:
+                    - config/basic_carry_5percent.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "494384795648"
+                        used: "258958995456"
+                email: piyar@dickinson.edu
+                executable: /Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/.venv/bin/python
+                git:
+                    commit: 6f58e41b7462248ce0fad0b6d70b1f7974fb33a8
+                    remote: https://github.com/rohanpiya/comp560-rohanpiya.git
+                host: Rohans-MacBook-Pro-2.local
+                memory:
+                    total: "8589934592"
+                os: macOS-15.7.2-arm64-arm-64bit-Mach-O
+                program: /Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/addition-experiments/../../comp560-nanoGPT/train.py
+                python: CPython 3.13.5
+                root: /Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/addition-experiments
+                startedAt: "2026-02-23T02:36:43.602202Z"
+                writerId: n26ngxayuta2fq3wpm6yq1yfrgka6p59
+        m: []
+        python_version: 3.13.5
+        t:
+            "1":
+                - 1
+            "2":
+                - 1
+            "3":
+                - 13
+                - 16
+            "4": 3.13.5
+            "5": 0.25.0
+            "12": 0.25.0
+            "13": darwin-arm64
+always_save_checkpoint:
+    value: false
+backend:
+    value: nccl
+batch_size:
+    value: 12
+beta1:
+    value: 0.9
+beta2:
+    value: 0.99
+bias:
+    value: false
+block_size:
+    value: 64
+compile:
+    value: false
+dataset:
+    value: basic_carry_5percent
+decay_lr:
+    value: true
+device:
+    value: cpu
+dropout:
+    value: 0
+dtype:
+    value: float16
+eval_interval:
+    value: 50
+eval_iters:
+    value: 20
+eval_only:
+    value: false
+grad_clip:
+    value: 1
+gradient_accumulation_steps:
+    value: 1
+init_from:
+    value: scratch
+learning_rate:
+    value: 0.001
+log_interval:
+    value: 10
+lr_decay_iters:
+    value: 5000
+max_iters:
+    value: 5000
+min_lr:
+    value: 0.0001
+n_embd:
+    value: 128
+n_head:
+    value: 4
+n_layer:
+    value: 4
+out_dir:
+    value: out/basic_carry_5percent
+wandb_log:
+    value: true
+wandb_project:
+    value: addition-experiments
+wandb_run_name:
+    value: 5 percent carry examples
+warmup_iters:
+    value: 100
+weight_decay:
+    value: 0.1

@@ -8,8 +8,8 @@ from generators import generate1DigitSimpleExamples
 
 target_length = 1_200_000  # ~1MB total characters
 total_length = 0
-lines = []
 
+lines = []
 while total_length < target_length:
     example = generate1DigitSimpleExamples()
     lines.append(example)

@@ -11,8 +11,8 @@ log_interval = 10
 always_save_checkpoint = False
 
 wandb_log = False # override via command line if you like
-wandb_project = None # 'jmac-insert-spaces'
-wandb_run_name = None # 'insert-spaces'
+wandb_project = "addition-experiments" # 'jmac-insert-spaces'
+wandb_run_name = "1 digit no carry" # 'insert-spaces'
 
 dataset = 'basic'
 gradient_accumulation_steps = 1
