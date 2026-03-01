@@ -18,8 +18,17 @@ from model import GPTConfig, GPT
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, required=True)
+parser.add_argument('--digits', type = int, required=True)
 args = parser.parse_args()
 dataset = args.dataset
+digits = args.digits
+
+if args.digits == 1:
+    low, high = 0, 10
+elif args.digits == 2:
+    low, high = 10, 100
+else:
+    raise ValueError("Only 1 or 2 digits supported")
 
 out_dir = f'out/{dataset}'
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
@@ -77,13 +86,14 @@ def encode(s):
 def decode(l):
     return ''.join([itos[i] for i in l])
 
+
 def generateAnswer(prompt):
     start_ids = encode(prompt) #encodes the prompt as a list of numbers
     x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
 
     with torch.no_grad():
         y = model.generate(x, 
-                           max_new_tokens=2, 
+                           max_new_tokens= args.digits + 1, 
                            temperature = 1.0, 
                            top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
 
@@ -91,6 +101,17 @@ def generateAnswer(prompt):
     generated = output[len(prompt):] # the generated decoded output
 
     return generated.strip() # removes extra whitespace
+
+def has_carry(a, b):
+    carry = 0
+    while a > 0 or b > 0:
+        digit_sum = (a % 10) + (b % 10) + carry
+        if digit_sum >= 10:
+            return True
+        carry = digit_sum // 10
+        a //= 10
+        b //= 10
+    return False
 
 # check for accuracy
 total_no_carry = 0 # tracks total number of sums without carry that the model performs
@@ -105,8 +126,8 @@ carry_predictions = Counter() # track carry predictions
 length_counter = Counter() # track the number of digits for carry predictions
 printed = 0 # to keep track of printed items
 
-for a in range(10):
-    for b in range(10):
+for a in range(low, high):
+    for b in range(low, high):
 
         prompt = f"{a}+{b}="
         correct_answer = str(a+b)
@@ -115,7 +136,7 @@ for a in range(10):
         length_counter[len(model_answer)] += 1
 
         #check without carry
-        if a+b < 10:
+        if not has_carry(a,b):
             total_no_carry += 1
             if model_answer == correct_answer:
                 correct_no_carry += 1

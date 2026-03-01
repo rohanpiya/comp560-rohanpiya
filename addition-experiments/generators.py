@@ -34,21 +34,30 @@ def generate2DigitSimpleExamples():
         a = random.randint(10, 99)
         b = random.randint(10, 99)
 
-        (a1,a10) = a % 10, a // 10
-        (b1,b10) = b % 10, b // 10
+        a1, a10 = a % 10, a // 10
+        b1, b10 = b % 10, b // 10
 
-        if not ((a1+b1 >= 10) or (a10 + b10 >= 10)):
+        carry_ones = (a1 + b1) >= 10
+        tens_sum = a10 + b10 + (1 if carry_ones else 0)
+        carry_tens = tens_sum >= 10
+
+        if not carry_ones and not carry_tens:
             return f"{a}+{b}={a+b}\n"
-        
+
+
 def generate2DigitCarryExamples():
     while True:
         a = random.randint(10, 99)
         b = random.randint(10, 99)
 
-        (a1,a10) = a % 10, a // 10
-        (b1,b10) = b % 10, b // 10
+        a1, a10 = a % 10, a // 10
+        b1, b10 = b % 10, b // 10
 
-        if(a1+b1 >= 10) or (a10 + b10 >= 10):
+        carry_ones = (a1 + b1) >= 10
+        tens_sum = a10 + b10 + (1 if carry_ones else 0)
+        carry_tens = tens_sum >= 10
+
+        if carry_ones or carry_tens:
             return f"{a}+{b}={a+b}\n"
 
 def generateComplexExamples():
