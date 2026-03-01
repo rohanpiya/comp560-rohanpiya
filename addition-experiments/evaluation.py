@@ -18,15 +18,18 @@ from model import GPTConfig, GPT
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, required=True)
-parser.add_argument('--digits', type = int, required=True)
+parser.add_argument('--train_digits', type=int, required=True)
+parser.add_argument('--eval_digits', type=int, required=True)
+parser.add_argument('--pad_eval', action='store_true')
 args = parser.parse_args()
-dataset = args.dataset
-digits = args.digits
 
-if args.digits == 1:
-    low, high = 0, 10
-elif args.digits == 2:
-    low, high = 10, 100
+dataset = args.dataset
+eval_digits = args.eval_digits
+
+if args.eval_digits == 1:
+    eval_low, eval_high = 0, 10
+elif args.eval_digits == 2:
+    eval_low, eval_high = 10, 100
 else:
     raise ValueError("Only 1 or 2 digits supported")
 
@@ -93,7 +96,7 @@ def generateAnswer(prompt):
 
     with torch.no_grad():
         y = model.generate(x, 
-                           max_new_tokens= args.digits + 1, 
+                           max_new_tokens= args.eval_digits + 1, 
                            temperature = 1.0, 
                            top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
 
@@ -113,6 +116,13 @@ def has_carry(a, b):
         b //= 10
     return False
 
+def build_prompt(a, b):
+    if args.pad_eval:
+        return f"{a:0{args.train_digits}d}+{b:0{args.train_digits}d}="
+    else:
+        return f"{a}+{b}="
+
+
 # check for accuracy
 total_no_carry = 0 # tracks total number of sums without carry that the model performs
 correct_no_carry = 0 # tracks total number of sums without carry that the model correctly performs
@@ -126,11 +136,14 @@ carry_predictions = Counter() # track carry predictions
 length_counter = Counter() # track the number of digits for carry predictions
 printed = 0 # to keep track of printed items
 
-for a in range(low, high):
-    for b in range(low, high):
+for a in range(eval_low, eval_high):
+    for b in range(eval_low, eval_high):
 
-        prompt = f"{a}+{b}="
-        correct_answer = str(a+b)
+        prompt = build_prompt(a,b)
+        if args.pad_eval:
+            correct_answer = f"0{a+b}"
+        else:
+            correct_answer = str(a+b)
 
         model_answer = generateAnswer(prompt)
         length_counter[len(model_answer)] += 1
