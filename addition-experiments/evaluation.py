@@ -121,6 +121,11 @@ def build_prompt(a, b):
         return f"{a:0{args.train_digits}d}+{b:0{args.train_digits}d}="
     else:
         return f"{a}+{b}="
+    
+def extract_final_answer(model_output):
+    parts = model_output.split(";") #model trained on CoT outputs in the format 75+86=5+6=11;7+8+1=16;161
+    return parts[-1].strip()
+
 
 
 # check for accuracy
@@ -146,8 +151,10 @@ for a in range(eval_low, eval_high):
             correct_answer = str(a+b)
 
         model_answer = generateAnswer(prompt)
+        if ";" in model_answer:
+            model_answer = extract_final_answer(model_answer)
         length_counter[len(model_answer)] += 1
-
+        
         #check without carry
         if not has_carry(a,b):
             total_no_carry += 1
