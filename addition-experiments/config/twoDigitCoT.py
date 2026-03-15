@@ -1,3 +1,4 @@
+#config for model trained on CoT
 out_dir = 'out/twoDigitCoT'
 eval_interval = 50
 eval_iters = 20
