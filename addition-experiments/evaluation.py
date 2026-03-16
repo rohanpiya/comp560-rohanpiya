@@ -105,6 +105,21 @@ def generateAnswer(prompt):
 
     return generated.strip() # removes extra whitespace
 
+def generateCoTAnswer(prompt):
+    start_ids = encode(prompt) #encodes the prompt as a list of numbers
+    x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
+
+    with torch.no_grad():
+        y = model.generate(x, 
+                           max_new_tokens= 18, #reasoning steps include a lot more tokens 
+                           temperature = 1.0, 
+                           top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
+
+    output = decode(y[0].tolist()) # decoding the generated output
+    generated = output[len(prompt):] # the generated decoded output
+
+    return generated.strip() # removes extra whitespace    
+
 def has_carry(a, b):
     carry = 0
     while a > 0 or b > 0:
@@ -150,11 +165,14 @@ for a in range(eval_low, eval_high):
         else:
             correct_answer = str(a+b)
 
-        model_answer = generateAnswer(prompt)
-        if ";" in model_answer:
-            model_answer = extract_final_answer(model_answer)
+        if "CoT" in args.dataset:
+            model_full_answer = generateCoTAnswer(prompt)
+            model_answer = extract_final_answer(model_full_answer)
+        else:
+            model_answer = generateAnswer(prompt)
+            
         length_counter[len(model_answer)] += 1
-        
+
         #check without carry
         if not has_carry(a,b):
             total_no_carry += 1

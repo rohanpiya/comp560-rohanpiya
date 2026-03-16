@@ -34,7 +34,9 @@ from collections import Counter
 sum_counter = Counter()
 
 for line in lines:
-    expr, ans = line.strip().split("=")
+    parts = line.strip().split("=")
+    expr = parts[0]
+    ans = parts[-1].split(";")[-1].strip()
     a, b = expr.split("+")
     sum_counter[(int(a), int(b))] += 1
 
