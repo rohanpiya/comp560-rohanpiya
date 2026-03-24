@@ -113,7 +113,7 @@ def generateCoTAnswer(prompt):
 
     with torch.no_grad():
         y = model.generate(x, 
-                           max_new_tokens= 18, #reasoning steps include a lot more tokens 
+                           max_new_tokens = 10 * args.train_digits, #reasoning steps include a lot more tokens 
                            temperature = 1.0, 
                            top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
 
@@ -156,7 +156,8 @@ correct_carry = 0 # tracks total number of sums with carry that the model correc
 from collections import Counter
 carry_predictions = Counter() # track carry predictions
 length_counter = Counter() # track the number of digits for carry predictions
-printed = 0 # to keep track of printed items
+printed1 = 0 # to keep track of printed items
+printed2 = 0
 
 for a in range(eval_low, eval_high):
     for b in range(eval_low, eval_high):
@@ -177,9 +178,21 @@ for a in range(eval_low, eval_high):
 
         length_counter[len(pred)] += 1
 
+        if printed1 < 5:
+            print("PROMPT:", repr(prompt))
+            print("FULL OUTPUT:", repr(model_answer))
+            print("LEN OUTPUT:", len(model_answer))
+            print("LEN PROMPT:", len(prompt))
+            print("RAW:", repr(model_answer))
+            print("PRED:", repr(pred))
+            print("GT:", repr(correct_answer))
+            print("EQUAL:", pred == correct_answer)
+            print()
+            printed1 += 1
+        
         if a >= 55:
             if b > 78:
-                if printed < 5:
+                if printed2 < 5:
                     print("PROMPT:", repr(prompt))
                     print("FULL OUTPUT:", repr(model_answer))
                     print("LEN OUTPUT:", len(model_answer))
@@ -189,7 +202,7 @@ for a in range(eval_low, eval_high):
                     print("GT:", repr(correct_answer))
                     print("EQUAL:", pred == correct_answer)
                     print()
-                    printed += 1
+                    printed2 += 1
 
         #check without carry
         if not has_carry(a,b):
