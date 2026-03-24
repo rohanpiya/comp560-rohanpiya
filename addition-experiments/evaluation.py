@@ -7,6 +7,7 @@ from contextlib import nullcontext
 import torch
 import sys
 import argparse
+import re
 
 
 # add comp560-nanogpt to path
@@ -21,6 +22,7 @@ parser.add_argument('--dataset', type=str, required=True)
 parser.add_argument('--train_digits', type=int, required=True)
 parser.add_argument('--eval_digits', type=int, required=True)
 parser.add_argument('--pad_eval', action='store_true')
+parser.add_argument('--cot', action='store_true')
 args = parser.parse_args()
 
 dataset = args.dataset
@@ -118,7 +120,7 @@ def generateCoTAnswer(prompt):
     output = decode(y[0].tolist()) # decoding the generated output
     generated = output[len(prompt):] # the generated decoded output
 
-    return generated.strip() # removes extra whitespace    
+    return generated.strip() # removes extra whitespace   
 
 def has_carry(a, b):
     carry = 0
@@ -138,10 +140,9 @@ def build_prompt(a, b):
         return f"{a}+{b}="
     
 def extract_final_answer(model_output):
-    parts = model_output.split(";") #model trained on CoT outputs in the format 75+86=5+6=11;7+8+1=16;161
-    return parts[-1].strip()
-
-
+    parts = model_output.split(';')
+    final = parts[-1].strip()
+    return final
 
 # check for accuracy
 total_no_carry = 0 # tracks total number of sums without carry that the model performs
@@ -160,32 +161,48 @@ for a in range(eval_low, eval_high):
     for b in range(eval_low, eval_high):
 
         prompt = build_prompt(a,b)
+
         if args.pad_eval:
-            correct_answer = f"0{a+b}"
+            correct_answer = f"{a+b:0{args.train_digits+1}d}"
         else:
             correct_answer = str(a+b)
 
-        if "CoT" in args.dataset:
-            model_full_answer = generateCoTAnswer(prompt)
-            model_answer = extract_final_answer(model_full_answer)
+        if args.cot:
+            model_answer = generateCoTAnswer(prompt)
+            pred = extract_final_answer(model_answer)
         else:
             model_answer = generateAnswer(prompt)
-            
-        length_counter[len(model_answer)] += 1
+            pred = model_answer.strip()
+
+        length_counter[len(pred)] += 1
+
+        if a >= 55:
+            if b > 78:
+                if printed < 5:
+                    print("PROMPT:", repr(prompt))
+                    print("FULL OUTPUT:", repr(model_answer))
+                    print("LEN OUTPUT:", len(model_answer))
+                    print("LEN PROMPT:", len(prompt))
+                    print("RAW:", repr(model_answer))
+                    print("PRED:", repr(pred))
+                    print("GT:", repr(correct_answer))
+                    print("EQUAL:", pred == correct_answer)
+                    print()
+                    printed += 1
 
         #check without carry
         if not has_carry(a,b):
             total_no_carry += 1
-            if model_answer == correct_answer:
+            if pred == correct_answer:
                 correct_no_carry += 1
         #check for carry
         else: 
-            if printed < 10:
-                print(f"{prompt}{model_answer} Correct Answer: {correct_answer}")
-                printed += 1
+            # if printed < 10:
+            #     print(f"{prompt}{model_answer} Correct Answer: {correct_answer}")
+            #     printed += 1
             total_carry += 1
-            carry_predictions[model_answer] += 1
-            if model_answer == correct_answer:
+            carry_predictions[pred] += 1
+            if pred == correct_answer:
                 correct_carry += 1
 
 print(f"No Carry Accuracy: {correct_no_carry/total_no_carry * 100}")
