@@ -139,9 +139,10 @@ def build_prompt(a, b):
     else:
         return f"{a}+{b}="
     
-def extract_final_answer(model_output):
-    parts = model_output.split(';')
-    final = parts[-1].strip()
+def extract_final_answer(model_ouput):
+    first_line = model_ouput.split("\n")[0] #take only the strings upto \n
+    parts = first_line.split(';') #split into different parts (reasoning steps)
+    final = parts[-1].strip() #extract the final answer
     return final
 
 # check for accuracy
