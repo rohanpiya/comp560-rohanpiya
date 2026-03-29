@@ -31,7 +31,7 @@ Gradually increase difficulty:
 ## Experiments
 
 ### 1. Single Digit Addition
-**ID:** `basic`
+**ID:** `basic_carry_5percent`
 
 - Task: Learn addition from 0–9  
 - Format:
@@ -49,7 +49,7 @@ Example:
 ---
 
 ### 2. Two Digit Addition
-**ID:** `intermediate`
+**ID:** `twoDigitCarry`
 
 - Task: Learn addition from 00–99  
 - Dataset size: 10,000 samples  
@@ -89,29 +89,30 @@ Example:
 ---
 
 ## Directory Structure
+```
 addition-experiments/
 │
 ├── data/
-│ ├── basic/
-│ ├── basic_carry_5percent/
-│ ├── twoDigitCarry/
-│ ├── twoDigitCoT/
-│ └── twoDigitSimple/
+│   ├── basic/
+│   ├── basic_carry_5percent/
+│   ├── twoDigitCarry/
+│   ├── twoDigitCoT/
+│   └── twoDigitSimple/
 │
 ├── config/
-│ ├── basic.py
-│ ├── basic_carry_5percent.py
-│ ├── twoDigitCarry.py
-│ └── twoDigitCoT.py
-│ ├── twoDigitSimple.py
+│   ├── basic.py
+│   ├── basic_carry_5percent.py
+│   ├── twoDigitCarry.py
+│   ├── twoDigitCoT.py
+│   └── twoDigitSimple.py
 │
 ├── out/
 │
 ├── generators.py
 ├── cotGenerators.py
 ├── evaluation.py
-└──  README.md
-
+└── README.md
+```
 
 ---
 
