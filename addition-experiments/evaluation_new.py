@@ -6,6 +6,7 @@ import argparse
 import random
 import re
 from collections import Counter
+import time
 
 # ---------------- PATH ----------------
 nanogpt_path = os.path.abspath(
@@ -119,6 +120,9 @@ correct_carry = correct_no_carry = 0
 
 length_counter = Counter()
 
+#track time
+start_time = time.time()
+
 for i in range(args.num_samples):
     a = random.randint(low, high - 1)
     b = random.randint(low, high - 1)
@@ -148,8 +152,9 @@ for i in range(args.num_samples):
         total_no_carry += 1
         if is_correct:
             correct_no_carry += 1
+end_time = time.time()
+elapsed_time = end_time - start_time
 
-# ---------------- RESULTS ----------------
 print(f"Samples: {args.num_samples}")
 print(f"No-carry accuracy: {correct_no_carry / max(1,total_no_carry) * 100:.2f}%")
 print(f"Carry accuracy: {correct_carry / max(1,total_carry) * 100:.2f}%")
