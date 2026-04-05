@@ -43,8 +43,8 @@ addition-experiments/
 | n_head       | 4     | matches n_embd=128 (32 dims/head)          |
 | n_embd       | 128   | ~0.8M params — small but trainable         |
 | block_size   | 128   | fits longest 3-digit CoT example (~42 ch)  |
-| batch_size   | 64    | stable gradients, reasonable speed on CPU  |
-| max_iters    | 5000  | enough for convergence on 100k examples    |
+| batch_size   | 32    | stable gradients, reasonable speed on CPU  |
+| max_iters    | 3000  | enough for convergence on 100k examples    |
 | carry split  | 50/50 | balanced — model sees equal carry/no-carry |
 
 ---
