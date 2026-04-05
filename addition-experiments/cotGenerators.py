@@ -87,8 +87,6 @@ def generate2DigitCarryCoTExample():
                 f"{final_answer}\n"
             )
         
-import random
-
 def generate3DigitCoTExample():
     a = random.randint(100, 999)
     b = random.randint(100, 999)
