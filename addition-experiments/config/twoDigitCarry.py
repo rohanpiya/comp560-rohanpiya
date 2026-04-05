@@ -8,7 +8,7 @@ always_save_checkpoint = False
 
 wandb_log = False # override via command line if you like
 wandb_project = "addition-experiments" # 'jmac-insert-spaces'
-wandb_run_name = "2 digit carry" # 'insert-spaces'
+wandb_run_name = "2 digit carry 2000 iters (wihtout CoT)" # 'insert-spaces'
 
 dataset = 'twoDigitCarry'
 gradient_accumulation_steps = 1

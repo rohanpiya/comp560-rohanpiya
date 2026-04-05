@@ -9,7 +9,7 @@ always_save_checkpoint = False
 
 wandb_log = False # override via command line if you like
 wandb_project = "addition-experiments" # 'jmac-insert-spaces'
-wandb_run_name = "2 digit cot" # 'insert-spaces'
+wandb_run_name = "2 digit cot 2000 iters" # 'insert-spaces'
 
 dataset = 'twoDigitCoT'
 gradient_accumulation_steps = 1

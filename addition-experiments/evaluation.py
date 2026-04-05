@@ -8,7 +8,7 @@ import torch
 import sys
 import argparse
 import re
-
+import random
 
 # add comp560-nanogpt to path
 nanogpt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../comp560-nanoGPT"))
@@ -32,8 +32,10 @@ if args.eval_digits == 1:
     eval_low, eval_high = 0, 10
 elif args.eval_digits == 2:
     eval_low, eval_high = 10, 100
+elif args.eval_digits == 3:
+    eval_low, eval_high = 100, 1000
 else:
-    raise ValueError("Only 1 or 2 digits supported")
+    raise ValueError("Only 1, 2 or 3 digits supported")
 
 out_dir = f'out/{dataset}'
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
@@ -91,7 +93,6 @@ def encode(s):
 def decode(l):
     return ''.join([itos[i] for i in l])
 
-
 def generateAnswer(prompt):
     start_ids = encode(prompt) #encodes the prompt as a list of numbers
     x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
@@ -112,8 +113,12 @@ def generateCoTAnswer(prompt):
     x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...] #stores as a tensor of encoded numbers
 
     with torch.no_grad():
+        if args.eval_digits == 1:
+            mnt = 2
+        else:
+            mnt = 10 * args.eval_digits
         y = model.generate(x, 
-                           max_new_tokens = 10 * args.train_digits, #reasoning steps include a lot more tokens 
+                           max_new_tokens = mnt, 
                            temperature = 1.0, 
                            top_k = 1) # feeds the model the tensor of encoded prompts as input, and predicts 2 next tokens
 
@@ -139,8 +144,11 @@ def build_prompt(a, b):
     else:
         return f"{a}+{b}="
     
-def extract_final_answer(model_ouput):
-    first_line = model_ouput.split("\n")[0] #take only the strings upto \n
+def extract_final_answer(model_output):
+    if args.eval_digits == 1:
+        first_part = model_output.split(";")
+        return first_part[0]
+    first_line = model_output.split("\n")[0] #take only the strings upto \n
     parts = first_line.split(';') #split into different parts (reasoning steps)
     final = parts[-1].strip() #extract the final answer
     return final
@@ -158,10 +166,69 @@ carry_predictions = Counter() # track carry predictions
 length_counter = Counter() # track the number of digits for carry predictions
 printed1 = 0 # to keep track of printed items
 printed2 = 0
+num_samples = 10000
 
-for a in range(eval_low, eval_high):
-    for b in range(eval_low, eval_high):
+if args.eval_digits <= 2: #evaluate all combinations
+    for a in range(eval_low, eval_high):
+        for b in range(eval_low, eval_high):
 
+            prompt = build_prompt(a,b)
+
+            if args.pad_eval:
+                correct_answer = f"{a+b:0{args.train_digits+1}d}"
+            else:
+                correct_answer = str(a+b)
+
+            if args.cot:
+                model_answer = generateCoTAnswer(prompt)
+                pred = extract_final_answer(model_answer)
+            else:
+                model_answer = generateAnswer(prompt)
+                pred = model_answer.strip()
+
+            length_counter[len(pred)] += 1
+
+            if printed1 < 5:
+                print("PROMPT:", repr(prompt))
+                print("FULL OUTPUT:", repr(model_answer))
+                print("LEN OUTPUT:", len(model_answer))
+                print("LEN PROMPT:", len(prompt))
+                print("RAW:", repr(model_answer))
+                print("PRED:", repr(pred))
+                print("GT:", repr(correct_answer))
+                print("EQUAL:", pred == correct_answer)
+                print()
+                printed1 += 1
+            
+            if a >= 55:
+                if b > 78:
+                    if printed2 < 5:
+                        print("PROMPT:", repr(prompt))
+                        print("FULL OUTPUT:", repr(model_answer))
+                        print("LEN OUTPUT:", len(model_answer))
+                        print("LEN PROMPT:", len(prompt))
+                        print("RAW:", repr(model_answer))
+                        print("PRED:", repr(pred))
+                        print("GT:", repr(correct_answer))
+                        print("EQUAL:", pred == correct_answer)
+                        print()
+                        printed2 += 1
+
+            #check without carry
+            if not has_carry(a,b):
+                total_no_carry += 1
+                if pred == correct_answer:
+                    correct_no_carry += 1
+            #check for carry
+            else: 
+                total_carry += 1
+                carry_predictions[pred] += 1
+                if pred == correct_answer:
+                    correct_carry += 1
+else:
+    for i in range (num_samples):
+        a = random.randint(eval_low,eval_high-1)
+        b = random.randint(eval_low,eval_high-1)
         prompt = build_prompt(a,b)
 
         if args.pad_eval:
@@ -189,20 +256,6 @@ for a in range(eval_low, eval_high):
             print("EQUAL:", pred == correct_answer)
             print()
             printed1 += 1
-        
-        if a >= 55:
-            if b > 78:
-                if printed2 < 5:
-                    print("PROMPT:", repr(prompt))
-                    print("FULL OUTPUT:", repr(model_answer))
-                    print("LEN OUTPUT:", len(model_answer))
-                    print("LEN PROMPT:", len(prompt))
-                    print("RAW:", repr(model_answer))
-                    print("PRED:", repr(pred))
-                    print("GT:", repr(correct_answer))
-                    print("EQUAL:", pred == correct_answer)
-                    print()
-                    printed2 += 1
 
         #check without carry
         if not has_carry(a,b):
@@ -211,16 +264,16 @@ for a in range(eval_low, eval_high):
                 correct_no_carry += 1
         #check for carry
         else: 
-            # if printed < 10:
-            #     print(f"{prompt}{model_answer} Correct Answer: {correct_answer}")
-            #     printed += 1
             total_carry += 1
             carry_predictions[pred] += 1
             if pred == correct_answer:
                 correct_carry += 1
+    print(f"Evaluated on {num_samples} random samples.")
+
 
 print(f"No Carry Accuracy: {correct_no_carry/total_no_carry * 100}")
 print(f"Carry Accuracy: {correct_carry/total_carry * 100}")
 print(f"Carry prediction distribution: {carry_predictions}")
 print(f"Output length distribution: {length_counter}")
+
 print(model_answer)
