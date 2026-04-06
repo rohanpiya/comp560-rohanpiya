@@ -35,5 +35,5 @@ compile = False
 
 # ── wandb ─────────────────────────────────────────────────────────────────────
 wandb_log      = False
-wandb_project  = 'addition-experiments'
+wandb_project  = 'addition-experiments-new'
 wandb_run_name = 'twoDigit-plain'

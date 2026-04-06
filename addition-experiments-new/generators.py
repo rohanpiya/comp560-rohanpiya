@@ -1,6 +1,6 @@
 """
 generators.py — synthetic addition data generators
-Supports 1, 2, and 3-digit addition in both plain and CoT formats.
+Supports 1, 2, 3, and 4-digit addition in both plain and CoT formats.
 Each function returns a single training example string ending with \n.
 
 Plain format:   47+26=73\n
@@ -161,3 +161,61 @@ def generate_3digit_cot_carry() -> str:
         a, b = random.randint(100, 999), random.randint(100, 999)
         if has_carry(a, b):
             return _cot_3digit(a, b)
+
+
+# ─────────────────────────────────────────────
+#  4-digit generators
+# ─────────────────────────────────────────────
+
+def generate_4digit_plain_no_carry() -> str:
+    while True:
+        a, b = random.randint(1000, 9999), random.randint(1000, 9999)
+        if not has_carry(a, b):
+            return f"{a}+{b}={a+b}\n"
+
+
+def generate_4digit_plain_carry() -> str:
+    while True:
+        a, b = random.randint(1000, 9999), random.randint(1000, 9999)
+        if has_carry(a, b):
+            return f"{a}+{b}={a+b}\n"
+
+
+def _cot_4digit(a: int, b: int) -> str:
+    """Build a 4-digit CoT string for given a, b."""
+    a1,    a10,   a100,  a1000  = a % 10, (a // 10) % 10, (a // 100) % 10, a // 1000
+    b1,    b10,   b100,  b1000  = b % 10, (b // 10) % 10, (b // 100) % 10, b // 1000
+
+    ones_sum      = a1    + b1
+    carry1        = ones_sum // 10
+
+    tens_sum      = a10   + b10   + carry1
+    carry2        = tens_sum // 10
+
+    hundreds_sum  = a100  + b100  + carry2
+    carry3        = hundreds_sum // 10
+
+    thousands_sum = a1000 + b1000 + carry3
+
+    return (
+        f"{a}+{b}="
+        f"{a1}+{b1}={ones_sum};"
+        f"{a10}+{b10}+{carry1}={tens_sum};"
+        f"{a100}+{b100}+{carry2}={hundreds_sum};"
+        f"{a1000}+{b1000}+{carry3}={thousands_sum};"
+        f"{a+b}\n"
+    )
+
+
+def generate_4digit_cot_no_carry() -> str:
+    while True:
+        a, b = random.randint(1000, 9999), random.randint(1000, 9999)
+        if not has_carry(a, b):
+            return _cot_4digit(a, b)
+
+
+def generate_4digit_cot_carry() -> str:
+    while True:
+        a, b = random.randint(1000, 9999), random.randint(1000, 9999)
+        if has_carry(a, b):
+            return _cot_4digit(a, b)

@@ -64,13 +64,15 @@ python data/threeDigitCoT/prepare.py
 
 ### Step 2 — Train models
 
-Run from the `comp560-nanoGPT/` directory (or wherever your train.py lives):
+Run from the `addition-experiments-new/` directory:
 
 ```bash
-python train.py addition-experiments/config/train_twoDigit.py
-python train.py addition-experiments/config/train_twoDigitCoT.py
-python train.py addition-experiments/config/train_threeDigit.py
-python train.py addition-experiments/config/train_threeDigitCoT.py
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_twoDigit.py  
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_twoDigitCoT.py  
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_threeDigit.py  
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_threeDigitCoT.py  
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_fourDigit.py 
+NANOGPT_CONFIG=../../comp560-nanoGPT/configurator.py python -u ../../comp560-nanoGPT/train.py config/config_train_fourDigitCoT.py   
 ```
 
 ### Step 3 — Evaluate
@@ -81,24 +83,36 @@ Run from `addition-experiments/`:
 # 2-digit plain model
 python evaluate.py --dataset twoDigit     --train_digits 2 --eval_digits 1
 python evaluate.py --dataset twoDigit     --train_digits 2 --eval_digits 2
-python evaluate.py --dataset twoDigit     --train_digits 2 --eval_digits 3 --num_samples 2000
+python evaluate.py --dataset twoDigit     --train_digits 2 --eval_digits 3 --num_samples 10000
 
 # 2-digit CoT model
 python evaluate.py --dataset twoDigitCoT  --train_digits 2 --eval_digits 1 --cot
 python evaluate.py --dataset twoDigitCoT  --train_digits 2 --eval_digits 2 --cot
-python evaluate.py --dataset twoDigitCoT  --train_digits 2 --eval_digits 3 --cot --num_samples 2000
+python evaluate.py --dataset twoDigitCoT  --train_digits 2 --eval_digits 3 --cot --num_samples 10000
 
 # 3-digit plain model
 python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 1
 python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 2
-python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 3 --num_samples 2000
-python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 4 --num_samples 2000
+python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 3 --num_samples 10000
+python evaluate.py --dataset threeDigit    --train_digits 3 --eval_digits 4 --num_samples 10000
 
 # 3-digit CoT model
 python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 1 --cot
 python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 2 --cot
-python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 3 --cot --num_samples 2000
-python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 4 --cot --num_samples 2000
+python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 3 --cot --num_samples 10000
+python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 4 --cot --num_samples 10000
+
+# 4-digit plain model
+python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 1
+python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 2
+python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 3 --num_samples 10000
+python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 4 --num_samples 10000
+
+# 3-digit CoT model
+python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 1 --cot
+python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 2 --cot
+python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 3 --cot --num_samples 10000
+python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 4 --cot --num_samples 10000
 ```
 
 ---
@@ -118,6 +132,11 @@ python evaluate.py --dataset threeDigitCoT --train_digits 3 --eval_digits 4 --co
 **CoT (3-digit):**
 ```
 473+261=3+1=4;7+6+0=13;4+2+1=7;734
+```
+
+**CoT (4-digit):**
+```
+4731+2618=1+8=9;3+1+0=4;7+6+0=13;4+2+1=7;7349
 ```
 
 ---

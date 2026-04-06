@@ -1,0 +1,38 @@
+{
+  "os": "macOS-15.7.2-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.5",
+  "startedAt": "2026-04-06T01:23:01.094904Z",
+  "args": [
+    "config/config_train_fourDigit.py"
+  ],
+  "program": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/addition-experiments-new/../../comp560-nanoGPT/train.py",
+  "git": {
+    "remote": "https://github.com/rohanpiya/comp560-rohanpiya.git",
+    "commit": "2dc6f0717769f015414e01a0a44d4bf89ea77a60"
+  },
+  "email": "piyar@dickinson.edu",
+  "root": "/Users/rohanpiya/Documents/Comp 560/comp560-rohanpiya/addition-experiments-new",
+  "host": "Rohans-MacBook-Pro-2.local",
+  "executable": "/opt/anaconda3/bin/python",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "494384795648",
+      "used": "286316974080"
+    }
+  },
+  "memory": {
+    "total": "8589934592"
+  },
+  "apple": {
+    "name": "Apple M3",
+    "ecpuCores": 4,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 8,
+    "swapTotalBytes": "5368709120",
+    "ramTotalBytes": "8589934592"
+  },
+  "writerId": "sv6bnrxf7byfto66zc5olv6tb5h6pcle"
+}
