@@ -12,6 +12,7 @@ addition-experiments/
 ├── generators.py          # all data generators (CoT + plain, all digit counts)
 ├── prepare_utils.py       # shared dataset-building logic
 ├── evaluate.py            # unified evaluation script
+├── evaluate_new.py        # evaluation script with CoT Step Diagnostics
 │
 ├── config/
 │   ├── base.py            # shared model + training config (identical for all runs)
@@ -108,11 +109,13 @@ python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 2
 python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 3 --num_samples 10000
 python evaluate.py --dataset fourDigit    --train_digits 4 --eval_digits 4 --num_samples 10000
 
-# 3-digit CoT model
+# 4-digit CoT model
 python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 1 --cot
 python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 2 --cot
 python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 3 --cot --num_samples 10000
 python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 4 --cot --num_samples 10000
+python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 5 --cot --num_samples 10000
+
 ```
 
 ---
@@ -149,7 +152,7 @@ python evaluate.py --dataset fourDigitCoT --train_digits 4 --eval_digits 4 --cot
 | --train_digits  | required| Digits the model was trained on                |
 | --eval_digits   | required| Digits to evaluate on                          |
 | --cot           | off     | Use CoT extraction                             |
-| --num_samples   | 2000    | Random samples for eval_digits >= 3            |
+| --num_samples   | 10000   | Random samples for eval_digits >= 3            |
 | --batch_size    | 32      | Generation batch size                          |
 | --pad_eval      | off     | Zero-pad inputs to train_digits width          |
 | --seed          | 42      | Reproducibility seed                           |
