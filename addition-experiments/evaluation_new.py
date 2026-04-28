@@ -52,20 +52,20 @@ def decode(l): return ''.join([itos[i] for i in l])
 # ---------------- GENERATION ----------------
 def get_max_tokens():
     """
-    Key fix: CoT needs a LOT more tokens.
+    Scalable token budget.
     """
     if args.cot:
-        return 20 * args.eval_digits   # scalable
+        return 20 * args.eval_digits
     else:
         return args.eval_digits + 3
 
-def generate(prompt):
+def generate(prompt, max_tokens):
     x = torch.tensor(encode(prompt), dtype=torch.long, device=device)[None, ...]
 
     with torch.no_grad():
         y = model.generate(
             x,
-            max_new_tokens=get_max_tokens(),
+            max_new_tokens=max_tokens,
             temperature=1.0,
             top_k=1
         )
@@ -73,29 +73,36 @@ def generate(prompt):
     out = decode(y[0].tolist())
     generated = out[len(prompt):]
 
-    return generated
+    return generated.strip()
 
 # ---------------- EXTRACTION (ROBUST) ----------------
-def extract_answer(output, gt):
+def extract_answer(output, eval_digits):
     """
-    BEST evaluation strategy:
-
-    - Extract ALL numbers
-    - If GT appears anywhere → correct
-    - Otherwise fallback to last number (for logging)
+    Robust extraction:
+    1. Take ONLY first line
+    2. Extract all numbers
+    3. Return LAST number with correct length
+    4. Fallback safely
     """
 
-    numbers = re.findall(r'\d+', output)
+    # Step 1: first line only
+    first_line = output.split("\n")[0]
+
+    # Step 2: extract numbers
+    numbers = re.findall(r'\d+', first_line)
 
     if not numbers:
-        return "", False
+        return ""
 
-    # If correct answer appears anywhere → success
-    if gt in numbers:
-        return gt, True
+    expected_len = eval_digits + 1
 
-    # Otherwise return last number
-    return numbers[-1], False
+    # Step 3: pick last valid length
+    for num in reversed(numbers):
+        if len(num) == expected_len:
+            return num
+
+    # Step 4: fallback
+    return numbers[-1]
 
 # ---------------- HELPERS ----------------
 def build_prompt(a, b):
@@ -120,7 +127,9 @@ correct_carry = correct_no_carry = 0
 
 length_counter = Counter()
 
-#track time
+max_tokens = get_max_tokens()
+
+# ---------------- TIMER ----------------
 start_time = time.time()
 
 for i in range(args.num_samples):
@@ -130,8 +139,10 @@ for i in range(args.num_samples):
     prompt = build_prompt(a, b)
     gt = str(a + b)
 
-    raw = generate(prompt)
-    pred, is_correct = extract_answer(raw, gt)
+    raw = generate(prompt, max_tokens)
+    pred = extract_answer(raw, args.eval_digits)
+
+    is_correct = (pred == gt)
 
     length_counter[len(pred)] += 1
 
@@ -152,10 +163,13 @@ for i in range(args.num_samples):
         total_no_carry += 1
         if is_correct:
             correct_no_carry += 1
+
+# ---------------- RESULTS ----------------
 end_time = time.time()
 elapsed_time = end_time - start_time
 
+print(f"Time to evaluate: {elapsed_time:.2f} seconds")
 print(f"Samples: {args.num_samples}")
-print(f"No-carry accuracy: {correct_no_carry / max(1,total_no_carry) * 100:.2f}%")
-print(f"Carry accuracy: {correct_carry / max(1,total_carry) * 100:.2f}%")
+print(f"No-carry accuracy: {correct_no_carry / max(1, total_no_carry) * 100:.2f}%")
+print(f"Carry accuracy: {correct_carry / max(1, total_carry) * 100:.2f}%")
 print("Output length distribution:", length_counter)

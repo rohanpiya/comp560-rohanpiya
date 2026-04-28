@@ -58,7 +58,7 @@ def parse_args():
                    help="Number of digits to evaluate on (can differ from train)")
     p.add_argument("--cot",          action="store_true",
                    help="Use CoT extraction and step diagnostics")
-    p.add_argument("--num_samples",  type=int, default=2000,
+    p.add_argument("--num_samples",  type=int, default=10000,
                    help="Samples for large search spaces (>= 3 digits). Default 2000.")
     p.add_argument("--batch_size",   type=int, default=32,
                    help="Generation batch size. Default 32.")
