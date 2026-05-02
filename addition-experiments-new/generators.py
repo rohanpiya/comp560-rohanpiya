@@ -235,84 +235,75 @@ def generate_4digit_cot_carry() -> str:
 #             3-digit: K=25  (CoT max=24)
 #             4-digit: K=34  (CoT max=33)
 #
-#  LOSS MASKING — the scratch positions are NOT supervised.
-#  Each generator returns a (text, mask) tuple where mask is a string of the
-#  same length as text: '1' = compute loss on this token, '0' = ignore it.
-#  The scratch '_' positions are '0'; everything else (prompt + answer + \n) is '1'.
+#  Full supervision: the model is trained to output '_' at every scratch
+#  position, then the correct answer.  The '_' output itself is trivial to
+#  learn — the interesting question is whether the K forward passes spent
+#  at those positions give the model useful computational time to prepare
+#  for the answer.
 #
-#  prepare_utils.build_dataset_masked() uses these masks to write a parallel
-#  train_mask.bin / val_mask.bin alongside train.bin / val.bin.
-#  train.py reads the mask and sets y=-1 at ignored positions before the
-#  forward pass — nanoGPT already uses ignore_index=-1 in F.cross_entropy,
-#  so no change to model.py is required.
+#  For CoT-initialized training (ScratchFromCoT experiments) the model
+#  starts from a CoT checkpoint.  The CoT weights already encode column
+#  arithmetic; scratch training asks whether that computation can be
+#  internalized into the residual stream at '_' positions rather than
+#  being written out explicitly.
 # ─────────────────────────────────────────────
 
 SCRATCH_K = {2: 16, 3: 25, 4: 34}   # digit_count -> number of scratch tokens
 
 
-def _scratch_with_mask(a: int, b: int, k: int) -> tuple[str, str]:
+def _scratch(a: int, b: int, k: int) -> str:
     """
-    Build a scratch-format example and its loss mask.
+    Build a scratch-format training example.
+    The model must output exactly k underscores then the correct answer.
 
-    Returns:
-        text  — e.g. '47+26=________________73\n'
-        mask  — same length, '1' where loss is computed, '0' for scratch positions
-
-    Example (k=4 for clarity):
-        text = '47+26=____73\n'
-        mask = '111111000011 1'   <- prompt=1s, scratch=0s, answer+newline=1s
+    Example (k=16): '47+26=________________73\n'
     """
-    prompt = f"{a}+{b}="
-    scratch = "_" * k
-    answer = f"{a + b}\n"
-    text = prompt + scratch + answer
-    mask = "1" * len(prompt) + "0" * k + "1" * len(answer)
-    return text, mask
+    return f"{a}+{b}={'_' * k}{a + b}\n"
 
 
 # ── 2-digit scratch ──────────────────────────────────────────────────────────
 
-def generate_2digit_scratch_no_carry() -> tuple[str, str]:
+def generate_2digit_scratch_no_carry() -> str:
     while True:
         a, b = random.randint(10, 99), random.randint(10, 99)
         if not has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[2])
+            return _scratch(a, b, SCRATCH_K[2])
 
 
-def generate_2digit_scratch_carry() -> tuple[str, str]:
+def generate_2digit_scratch_carry() -> str:
     while True:
         a, b = random.randint(10, 99), random.randint(10, 99)
         if has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[2])
+            return _scratch(a, b, SCRATCH_K[2])
 
 
 # ── 3-digit scratch ──────────────────────────────────────────────────────────
 
-def generate_3digit_scratch_no_carry() -> tuple[str, str]:
+def generate_3digit_scratch_no_carry() -> str:
     while True:
         a, b = random.randint(100, 999), random.randint(100, 999)
         if not has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[3])
+            return _scratch(a, b, SCRATCH_K[3])
 
 
-def generate_3digit_scratch_carry() -> tuple[str, str]:
+def generate_3digit_scratch_carry() -> str:
     while True:
         a, b = random.randint(100, 999), random.randint(100, 999)
         if has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[3])
+            return _scratch(a, b, SCRATCH_K[3])
 
 
 # ── 4-digit scratch ──────────────────────────────────────────────────────────
 
-def generate_4digit_scratch_no_carry() -> tuple[str, str]:
+def generate_4digit_scratch_no_carry() -> str:
     while True:
         a, b = random.randint(1000, 9999), random.randint(1000, 9999)
         if not has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[4])
+            return _scratch(a, b, SCRATCH_K[4])
 
 
-def generate_4digit_scratch_carry() -> tuple[str, str]:
+def generate_4digit_scratch_carry() -> str:
     while True:
         a, b = random.randint(1000, 9999), random.randint(1000, 9999)
         if has_carry(a, b):
-            return _scratch_with_mask(a, b, SCRATCH_K[4])
+            return _scratch(a, b, SCRATCH_K[4])
