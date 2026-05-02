@@ -250,15 +250,27 @@ def generate_4digit_cot_carry() -> str:
 
 SCRATCH_K = {2: 16, 3: 25, 4: 34}   # digit_count -> number of scratch tokens
 
+# IMPORTANT: we use ';' as the scratch placeholder token, NOT '_'.
+# This is because the CoT model (which we fine-tune from) has a 13-char vocab
+# that includes ';' as a column separator.  Using ';' keeps the vocab identical
+# between CoT and scratch datasets, so the CoT checkpoint loads without any
+# embedding table mismatch.  If we used '_', the vocab would grow to 14 chars
+# and the loaded weights would be incompatible, causing loss to explode at
+# the start of fine-tuning.
+SCRATCH_TOKEN = ';'
+
 
 def _scratch(a: int, b: int, k: int) -> str:
     """
     Build a scratch-format training example.
-    The model must output exactly k underscores then the correct answer.
+    The model must output exactly k semicolons then the correct answer.
 
-    Example (k=16): '47+26=________________73\n'
+    Example (k=16): '47+26=;;;;;;;;;;;;;;;;73\n'
+
+    We use ';' (not '_') so the vocab stays identical to CoT training,
+    allowing clean fine-tuning from a CoT checkpoint.
     """
-    return f"{a}+{b}={'_' * k}{a + b}\n"
+    return f"{a}+{b}={SCRATCH_TOKEN * k}{a + b}\n"
 
 
 # ── 2-digit scratch ──────────────────────────────────────────────────────────
