@@ -319,3 +319,47 @@ def generate_4digit_scratch_carry() -> str:
         a, b = random.randint(1000, 9999), random.randint(1000, 9999)
         if has_carry(a, b):
             return _scratch(a, b, SCRATCH_K[4])
+
+
+# ── 5-digit CoT (for OOD evaluation of mixedCoT model only) ──────────────────
+
+def _cot_5digit(a: int, b: int) -> str:
+    """Build a 5-digit CoT string for OOD evaluation."""
+    a1,    a10,   a100,  a1000,  a10000 = (
+        a % 10, (a // 10) % 10, (a // 100) % 10,
+        (a // 1000) % 10, a // 10000
+    )
+    b1,    b10,   b100,  b1000,  b10000 = (
+        b % 10, (b // 10) % 10, (b // 100) % 10,
+        (b // 1000) % 10, b // 10000
+    )
+    s1 = a1    + b1;    c1 = s1 // 10
+    s2 = a10   + b10   + c1; c2 = s2 // 10
+    s3 = a100  + b100  + c2; c3 = s3 // 10
+    s4 = a1000 + b1000 + c3; c4 = s4 // 10
+    s5 = a10000 + b10000 + c4
+    return (
+        f"{a}+{b}="
+        f"{a1}+{b1}={s1};"
+        f"{a10}+{b10}+{c1}={s2};"
+        f"{a100}+{b100}+{c2}={s3};"
+        f"{a1000}+{b1000}+{c3}={s4};"
+        f"{a10000}+{b10000}+{c4}={s5};"
+        f"{a+b}\n"
+    )
+
+
+def generate_5digit_cot_no_carry() -> str:
+    from generators import has_carry
+    while True:
+        a, b = random.randint(10000, 99999), random.randint(10000, 99999)
+        if not has_carry(a, b):
+            return _cot_5digit(a, b)
+
+
+def generate_5digit_cot_carry() -> str:
+    from generators import has_carry
+    while True:
+        a, b = random.randint(10000, 99999), random.randint(10000, 99999)
+        if has_carry(a, b):
+            return _cot_5digit(a, b)
